@@ -16,14 +16,16 @@ var users = new Users();
 
 app.use(express.static(publicPath));
 
+// Socket 접속
 io.on('connection', (socket) => {
-    console.log('New user connected');
 
+    // Socket Room 접속
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
             return callback('Name and room name are required.');
         }
 
+        // 파라메터의 방이름에 해당하는 채팅방 접속
         socket.join(params.room);
         users.removeUser(socket.id);
         users.addUser(socket.id, params.name, params.room);
@@ -34,6 +36,7 @@ io.on('connection', (socket) => {
         callback();
     });
 
+    // 메시지 보내기
     socket.on('createMessage', (message, callback) => {
         var user = users.getUser(socket.id);
 
@@ -44,6 +47,7 @@ io.on('connection', (socket) => {
         callback();
     });
 
+    // 현재위치 보내기
     socket.on('createLocationMessage', (coords) => {
         var user = users.getUser(socket.id);
 
@@ -52,6 +56,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Socket 접속을 끊었을 때
     socket.on('disconnect', () => {
         var user = users.removeUser(socket.id);
 

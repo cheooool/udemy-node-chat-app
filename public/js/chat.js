@@ -17,11 +17,13 @@ function scrollToBottom () {
     }
 }
 
+// 클라이언트단에서 Socket 접속 확인
 socket.on('connect', function () {
     var params = $.deparam(window.location.search);
 
     console.log(params);
 
+    // 접속한 파라메터 값을 서버로 전송
     socket.emit('join', params, function (err) {
         if (err) {
             alert(err);
@@ -32,10 +34,12 @@ socket.on('connect', function () {
     })
 });
 
+// Socket 서버 연결 끊김
 socket.on('disconnect', function () {
     console.log('Disconnected from server');
 });
 
+// 채팅방 이용자가 들어올 경우 리스트 업데이트
 socket.on('updateUserList', function (users) {
     var $ol = $('<ol></ol>');
 
@@ -46,6 +50,7 @@ socket.on('updateUserList', function (users) {
     $('#users').html($ol);
 });
 
+// 메시지 전송
 socket.on('newMessage', function (message) {
     var formattedTime = moment(message.createAt).format('h:mm a');
     var $template = $('#message-template').html();
@@ -59,6 +64,7 @@ socket.on('newMessage', function (message) {
     scrollToBottom();
 });
 
+// 현재 위치 전송
 socket.on('newLocationMessage', function (message) {
     var formattedTime = moment(message.createAt).format('h:mm a');
     var $template = $('#location-message-template').html();
